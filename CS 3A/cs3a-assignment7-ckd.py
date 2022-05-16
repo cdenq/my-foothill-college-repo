@@ -15,6 +15,12 @@ class NoMatchingItemsError(Exception):
     pass
 
 
+class Stats(Enum):
+    MIN = 0
+    AVG = 1
+    MAX = 2
+
+
 class DataSet:
 
     max_header_length = 30
@@ -39,6 +45,7 @@ class DataSet:
         return
 
     def _initialize_labels(self):
+        """ Turn loaded data into sets and populates self.lists. """
         zip_set = {i[0] for i in self._data}
         time_set = {i[1] for i in self._data}
         self._zips = list(zip_set)
@@ -143,12 +150,6 @@ def main():
             print("Try again; it's too long!")
             continue
     menu(purple_air)
-
-
-class Stats(Enum):
-    MIN = 0
-    AVG = 1
-    MAX = 2
 
 
 def unit_tester():
