@@ -29,7 +29,7 @@ class DataSet:
         """  Initialize the class objects with header as string. """
         self.header = header
         self._data = None
-        self._zips = []
+        self._zips = {}
         self._times = []
 
     @property
@@ -45,11 +45,12 @@ class DataSet:
         return
 
     def _initialize_labels(self):
-        """ Turn loaded data into sets and populates self.lists. """
-        zip_set = {i[0] for i in self._data}
+        """ Populate self._ with properly formatted loaded data. """
         time_set = {i[1] for i in self._data}
-        self._zips = list(zip_set)
         self._times = list(time_set)
+        self._zips = {}
+        for i in range(len(self._data)):
+            self._zips[self._data[i][0]] = True
         return
 
     def load_default_data(self):
@@ -94,7 +95,7 @@ class DataSet:
         """ Generate a display table of the queried value.
 
         Args:
-            stat (Stats object): Enum class attribute that is our query value
+            stat (Stats object): Our query value (Enum class attribute)
         Returns:
             print statement: displayed table of queried value
         """
@@ -103,24 +104,28 @@ class DataSet:
         else:
             chr_width = 7
 
-            for i in range(len(self._times) + 1):  # Create header row
+            # HEADER row
+            for i in range(len(self._times) + 1):
                 if i == 0:
                     print(f"       ", end="")
                 else:
                     print(f" {self._times[i - 1]:>{chr_width}}", end="")
             print(f"\n", end="")
 
-            for j in range(len(self._zips)):  # Create rest of body rows
-                print(f"{self._zips[j]:{chr_width}}", end="")
-                for k in range(0, 3):
-                    try:
-                        calc = self._cross_table_statistics(self._zips[j],
-                                                            self._times[k])
-                        print(f" {calc[stat.value]:7.2f}", end="")
-                    except NoMatchingItemsError:
-                        print("     N/A", end="")
-                if j != len(self._zips):
-                    print(f"\n", end="")
+            # BODY rows
+            for index, (key, value) in enumerate(self._zips.items()):
+                if value:
+                    print(f"{key:{chr_width}}", end="")
+                    for k in range(0, 3):
+                        try:
+                            calc = self._cross_table_statistics(key,
+                                                                self._times[k])
+                            print(f" {calc[stat.value]:7.2f}", end="")
+                        except NoMatchingItemsError:
+                            print("     N/A", end="")
+                    if index != len(self._zips):
+                        print(f"\n", end="")
+            print(f"\n", end="")
 
 
 def print_menu():
@@ -184,98 +189,32 @@ def main():
     menu(purple_air)
 
 
+def unit_test():
+    my_dataset = DataSet()
+    my_dataset.load_default_data()
+    my_dataset.display_cross_table(Stats.MIN)
+    my_dataset._zips["94022"] = False
+    my_dataset.display_cross_table(Stats.MIN)
+    my_dataset._zips["12345"] = False
+    my_dataset._zips["94040"] = False
+    my_dataset.display_cross_table(Stats.MIN)
+
+
 if __name__ == "__main__":
-    main()
+    unit_test()
+    # main()
+
 
 r"""
 --- sample run #1 ---
-Welcome to Christopher's first OOP program!
-Please input your name.John Smith
-John Smith, welcome to the Air Quality Database.
-Please input a header fewer than 30 characters.Purple Air
-
-Purple Air
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.1
-Please load the data first (option 5)!
-
-Purple Air
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.5
-
-Purple Air
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.1
          Midday Morning Evening
 12345       N/A    1.10     N/A
-94040       N/A    2.00     N/A
 94022      1.00    2.20    3.20
+94040       N/A    1.00     N/A
 
-Purple Air
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.2
          Midday Morning Evening
 12345       N/A    1.10     N/A
 94040       N/A    1.00     N/A
-94022      1.00    2.20    3.20
 
-Purple Air
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.3
          Midday Morning Evening
-12345       N/A    1.10     N/A
-94040       N/A    3.00     N/A
-94022      1.00    2.20    3.20
-
-Purple Air
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.4
-Sorry, option 4 is not yet implemented!
-
-Purple Air
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.9
-Goodbye, and thank you for using Purple Air!
 """

@@ -79,7 +79,7 @@ class DataSet:
             raise EmptyDatasetError
         else:
             matching_data = [entry[2] for entry in self._data if
-                             (entry[0] == descriptor_one) &
+                             (entry[0] == descriptor_one) and
                              (entry[1] == descriptor_two)]
             if len(matching_data) == 0:
                 raise NoMatchingItemsError
@@ -166,7 +166,8 @@ def unit_tester():
     my_time = "Morning"
     data_tuple = my_dataset._cross_table_statistics(my_zip, my_time)
     for item in Stats:
-        print(f"The {item.name} for {my_zip}, {my_time} is {data_tuple[item.value]}.")
+        print(f"The {item.name} for {my_zip}, {my_time} is "
+              f"{data_tuple[item.value]}.")
     return
 
 

@@ -59,7 +59,7 @@ class DataSet:
             raise EmptyDatasetError
         else:
             matching_data = [entry[2] for entry in self._data if
-                             (entry[0] == descriptor_one) &
+                             (entry[0] == descriptor_one) and
                              (entry[1] == descriptor_two)]
             if len(matching_data) == 0:
                 raise NoMatchingItemsError
