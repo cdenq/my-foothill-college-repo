@@ -1,10 +1,9 @@
-""" Allow the user to input their name, get greeting, and then see menu
-options with a header of their input choice. Continuously loop through
-asking for header names and menu options until a valid one is picked.
+""" Allow the user to input name and table header name. Has options for
+filtering specific data and then displaying table of summary statistics.
 """
-
-
 from enum import Enum
+import csv
+filename = './purple_air.csv'
 
 
 class EmptyDatasetError(Exception):
@@ -34,7 +33,7 @@ class DataSet:
 
     def get_zips(self):
         """  Return dictionary of zip codes. """
-        return self._zips.copy()
+        return self._zips
 
     def toggle_zip(self, target_zip: str):
         """  Flip the value of specified zip code to T if F, F if T. """
@@ -73,6 +72,17 @@ class DataSet:
                       ("94040", "Morning", 1.0),
                       ("94022", "Evening", 3.2)]
         self._initialize_labels()
+        return
+
+    def load_file(self):
+        """ Automatically load the imported data from csv file. """
+        with open(filename, "r") as file:
+            csvreader = csv.reader(file)
+            next(csvreader)
+            full_list = [(row[1], row[4], float(row[5])) for row in csvreader]
+        self._data = full_list
+        self._initialize_labels()
+        print(f"Successfully loaded {len(full_list)} lines.")
         return
 
     def _cross_table_statistics(self,
@@ -146,7 +156,6 @@ def manage_filters(my_dataset: DataSet):
         dict_of_zips = my_dataset.get_zips()
         if not dict_of_zips:
             print("This dataset is empty; please load data first.")
-            break
         else:
             # PRINT ZIPCODE TABLE
             print("The following labels are in the dataset:")
@@ -213,7 +222,7 @@ def menu(my_dataset: DataSet):
         elif user_input_as_int == 4:
             manage_filters(my_dataset)
         elif user_input_as_int == 5:
-            my_dataset.load_default_data()
+            my_dataset.load_file()
         else:
             print("Hey,", user_input_as_int, "is not even on the list!")
     print(f"Goodbye, and thank you for using {my_dataset.header}!")
@@ -247,9 +256,9 @@ r"""
 Welcome to Christopher's first OOP program!
 Please input your name.Gordon Ramsay
 Gordon Ramsay, welcome to the Air Quality Database.
-Please input a header fewer than 30 characters.Gordon's Kitchen Air Quality
+Please input a header fewer than 30 characters.Kitchen Air Quality
 
-Gordon's Kitchen Air Quality
+Kitchen Air Quality
 Main Menu
 1 - Print Average Particulate Concentration by Zip Code and Time
 2 - Print Minimum Particulate Concentration by Zip Code and Time
@@ -257,10 +266,10 @@ Main Menu
 4 - Adjust Zip Code Filters
 5 - Load Data
 9 - Quit
-Please pick a menu option.4
-This dataset is empty; please load data first.
+Please pick a menu option.1
+Please load the data first (option 5)!
 
-Gordon's Kitchen Air Quality
+Kitchen Air Quality
 Main Menu
 1 - Print Average Particulate Concentration by Zip Code and Time
 2 - Print Minimum Particulate Concentration by Zip Code and Time
@@ -269,8 +278,9 @@ Main Menu
 5 - Load Data
 9 - Quit
 Please pick a menu option.5
+Successfully loaded 6147 lines.
 
-Gordon's Kitchen Air Quality
+Kitchen Air Quality
 Main Menu
 1 - Print Average Particulate Concentration by Zip Code and Time
 2 - Print Minimum Particulate Concentration by Zip Code and Time
@@ -279,12 +289,55 @@ Main Menu
 5 - Load Data
 9 - Quit
 Please pick a menu option.1
-         Midday Morning Evening
-12345       N/A    1.10     N/A
-94022      1.00    2.20    3.20
-94040       N/A    2.00     N/A
+          Night  Midday Morning Evening
+94028      1.58    2.92    1.54    2.26
+94304      1.23    2.89    1.36    1.17
+94022      1.32    2.92    1.50    1.22
+94024      1.69    3.27    1.71    3.42
+94040      2.47    3.28    1.86    4.57
+94087      2.31    3.92    2.24    4.77
+94041      3.43    3.52    2.41    4.53
+95014      2.19    3.29    1.06    2.38
 
-Gordon's Kitchen Air Quality
+Kitchen Air Quality
+Main Menu
+1 - Print Average Particulate Concentration by Zip Code and Time
+2 - Print Minimum Particulate Concentration by Zip Code and Time
+3 - Print Maximum Particulate Concentration by Zip Code and Time
+4 - Adjust Zip Code Filters
+5 - Load Data
+9 - Quit
+Please pick a menu option.2
+          Night  Midday Morning Evening
+94028      0.00    0.00    0.00    0.00
+94304      0.00    0.00    0.00    0.00
+94022      0.00    0.00    0.00    0.00
+94024      0.00    0.00    0.00    0.00
+94040      0.00    0.00    0.00    0.00
+94087      0.00    0.00    0.00    0.00
+94041      0.00    0.00    0.00    0.00
+95014      0.00    0.00    0.00    0.00
+
+Kitchen Air Quality
+Main Menu
+1 - Print Average Particulate Concentration by Zip Code and Time
+2 - Print Minimum Particulate Concentration by Zip Code and Time
+3 - Print Maximum Particulate Concentration by Zip Code and Time
+4 - Adjust Zip Code Filters
+5 - Load Data
+9 - Quit
+Please pick a menu option.3
+          Night  Midday Morning Evening
+94028     25.00   24.21   25.72   79.88
+94304      9.92   20.93    9.66    9.73
+94022     14.38   26.59   12.90   11.53
+94024      9.67   29.17   15.12   37.57
+94040     20.34   25.95   10.49   44.05
+94087     13.14   26.48    9.39   38.11
+94041     19.67   25.89    8.02   31.82
+95014     37.82   25.00    9.95   69.05
+
+Kitchen Air Quality
 Main Menu
 1 - Print Average Particulate Concentration by Zip Code and Time
 2 - Print Minimum Particulate Concentration by Zip Code and Time
@@ -294,57 +347,38 @@ Main Menu
 9 - Quit
 Please pick a menu option.4
 The following labels are in the dataset:
-1: 12345      ACTIVE
-2: 94022      ACTIVE
-3: 94040      ACTIVE
-Select an item to toggle or press enter/return to quit.1
+1: 94028      ACTIVE
+2: 94304      ACTIVE
+3: 94022      ACTIVE
+4: 94024      ACTIVE
+5: 94040      ACTIVE
+6: 94087      ACTIVE
+7: 94041      ACTIVE
+8: 95014      ACTIVE
+Select an item to toggle or press enter/return to quit.8
 The following labels are in the dataset:
-1: 12345      INACTIVE
-2: 94022      ACTIVE
-3: 94040      ACTIVE
-Select an item to toggle or press enter/return to quit.
-Done adjusting filters; returning to Main Menu.
-
-Gordon's Kitchen Air Quality
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.1
-         Midday Morning Evening
-94022      1.00    2.20    3.20
-94040       N/A    2.00     N/A
-
-Gordon's Kitchen Air Quality
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.4
-The following labels are in the dataset:
-1: 12345      INACTIVE
-2: 94022      ACTIVE
-3: 94040      ACTIVE
-Select an item to toggle or press enter/return to quit.2
-The following labels are in the dataset:
-1: 12345      INACTIVE
-2: 94022      INACTIVE
-3: 94040      ACTIVE
+1: 94028      ACTIVE
+2: 94304      ACTIVE
+3: 94022      ACTIVE
+4: 94024      ACTIVE
+5: 94040      ACTIVE
+6: 94087      ACTIVE
+7: 94041      ACTIVE
+8: 95014      INACTIVE
 Select an item to toggle or press enter/return to quit.3
 The following labels are in the dataset:
-1: 12345      INACTIVE
-2: 94022      INACTIVE
-3: 94040      INACTIVE
+1: 94028      ACTIVE
+2: 94304      ACTIVE
+3: 94022      INACTIVE
+4: 94024      ACTIVE
+5: 94040      ACTIVE
+6: 94087      ACTIVE
+7: 94041      ACTIVE
+8: 95014      INACTIVE
 Select an item to toggle or press enter/return to quit.
 Done adjusting filters; returning to Main Menu.
 
-Gordon's Kitchen Air Quality
+Kitchen Air Quality
 Main Menu
 1 - Print Average Particulate Concentration by Zip Code and Time
 2 - Print Minimum Particulate Concentration by Zip Code and Time
@@ -352,89 +386,16 @@ Main Menu
 4 - Adjust Zip Code Filters
 5 - Load Data
 9 - Quit
-Please pick a menu option.1
-         Midday Morning Evening
+Please pick a menu option.3
+          Night  Midday Morning Evening
+94028     25.00   24.21   25.72   79.88
+94304      9.92   20.93    9.66    9.73
+94024      9.67   29.17   15.12   37.57
+94040     20.34   25.95   10.49   44.05
+94087     13.14   26.48    9.39   38.11
+94041     19.67   25.89    8.02   31.82
 
-Gordon's Kitchen Air Quality
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.4
-The following labels are in the dataset:
-1: 12345      INACTIVE
-2: 94022      INACTIVE
-3: 94040      INACTIVE
-Select an item to toggle or press enter/return to quit.1
-The following labels are in the dataset:
-1: 12345      ACTIVE
-2: 94022      INACTIVE
-3: 94040      INACTIVE
-Select an item to toggle or press enter/return to quit.
-Done adjusting filters; returning to Main Menu.
-
-Gordon's Kitchen Air Quality
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.1
-         Midday Morning Evening
-12345       N/A    1.10     N/A
-
-Gordon's Kitchen Air Quality
-Main Menu
-1 - Print Average Particulate Concentration by Zip Code and Time
-2 - Print Minimum Particulate Concentration by Zip Code and Time
-3 - Print Maximum Particulate Concentration by Zip Code and Time
-4 - Adjust Zip Code Filters
-5 - Load Data
-9 - Quit
-Please pick a menu option.4
-The following labels are in the dataset:
-1: 12345      ACTIVE
-2: 94022      INACTIVE
-3: 94040      INACTIVE
-Select an item to toggle or press enter/return to quit.0
-'0' is not a menu item.
-The following labels are in the dataset:
-1: 12345      ACTIVE
-2: 94022      INACTIVE
-3: 94040      INACTIVE
-Select an item to toggle or press enter/return to quit.4
-'4' is not a menu item.
-The following labels are in the dataset:
-1: 12345      ACTIVE
-2: 94022      INACTIVE
-3: 94040      INACTIVE
-Select an item to toggle or press enter/return to quit.-2
-'-2' is not a menu item.
-The following labels are in the dataset:
-1: 12345      ACTIVE
-2: 94022      INACTIVE
-3: 94040      INACTIVE
-Select an item to toggle or press enter/return to quit.1.1
-'1.1' is not an valid number.
-The following labels are in the dataset:
-1: 12345      ACTIVE
-2: 94022      INACTIVE
-3: 94040      INACTIVE
-Select an item to toggle or press enter/return to quit.WHERE'S THE LAMB SAUCE?
-'WHERE'S THE LAMB SAUCE?' is not an valid number.
-The following labels are in the dataset:
-1: 12345      ACTIVE
-2: 94022      INACTIVE
-3: 94040      INACTIVE
-Select an item to toggle or press enter/return to quit.
-Done adjusting filters; returning to Main Menu.
-
-Gordon's Kitchen Air Quality
+Kitchen Air Quality
 Main Menu
 1 - Print Average Particulate Concentration by Zip Code and Time
 2 - Print Minimum Particulate Concentration by Zip Code and Time
@@ -443,5 +404,5 @@ Main Menu
 5 - Load Data
 9 - Quit
 Please pick a menu option.9
-Goodbye, and thank you for using Gordon's Kitchen Air Quality!
+Goodbye, and thank you for using Kitchen Air Quality!
 """
