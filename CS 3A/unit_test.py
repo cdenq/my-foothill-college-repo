@@ -9,7 +9,7 @@ Reach in to a protected object to verify that the correct number of lines were l
 Your unit test must use the techniques in the Advanced Unit Testing module.
 '''
 import unittest
-from final
+import final
 
 
 class EmptyDatasetError(Exception):
@@ -20,10 +20,12 @@ class NoMatchingItemsError(Exception):
     pass
 
 
+final.DataSet("test")
+
 class TestCC(unittest.TestCase):
 
 	def test_loading_csv_data(self):
-		final.DataSet("test").load_file()
+
 		expected = 6147
 		actual = len(test._data)
 		self.assertEqual(actual, expected)
