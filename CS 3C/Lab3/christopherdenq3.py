@@ -138,4 +138,5 @@ Avg: 1.257499999999731e-05
 
 Thank you for using Chris's Stack Balancer!
 Bye!
+
 """
