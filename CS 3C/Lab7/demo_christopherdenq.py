@@ -17,12 +17,13 @@ from christopherdenqLab7 import *
 def main():
     print("Welcome to Chris's BST Tester!")
     # Setup program object
-    test = BinarySearchTree()
+    test = BinaryTree()
 
     # Insert values
     to_insert = [15, 43, 87, 7, 13, 19, 17, 5, 34, 3, 4]
-    for i in range(len(to_insert)):
-        test.put(i, to_insert[i])
+    for i in to_insert:
+        test.insert(i)
+    test.preorder(test.root)
 
     print("Thank you for using Chris's BST Tester!")
     print("Bye!")
